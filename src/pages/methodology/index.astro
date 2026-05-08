@@ -1,0 +1,104 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Veridoro MCP Server Scoring Methodology v1.0',
+  description: 'Five-criterion, 0–10 scale scoring methodology for ranking MCP servers. Published, versioned, and human-reviewed.',
+  author: { '@type': 'Organization', name: 'Veridoro' },
+  publisher: { '@type': 'Organization', name: 'Veridoro', url: 'https://veridoro.com' },
+  datePublished: '2026-05-07',
+  dateModified: '2026-05-07',
+  url: 'https://veridoro.com/methodology/',
+};
+---
+<Base
+  title="Scoring Methodology v1.0 — Veridoro"
+  description="How Veridoro scores MCP servers: five criteria, 0–10 scale, explicit definitions, human-reviewed. Published May 2026."
+  jsonLd={jsonLd}
+>
+  <div class="page">
+    <div class="page-header">
+      <h1 id="methodology">Veridoro Scoring Methodology</h1>
+      <p class="subtitle">How we evaluate MCP servers and AI integrations</p>
+      <p class="meta">Version 1.0 · Published 2026-05-07 · Permanent URL: /methodology/v1.0/</p>
+    </div>
+
+    <div class="notice">
+      This methodology is public, versioned, and dated. Every score on this site cites a criterion on this page. If you believe a score is wrong, open a PR with linked evidence — we will review it within two weeks.
+    </div>
+
+    <div style="max-width:72ch;">
+      <p>
+        Veridoro scores each MCP server on five criteria, each rated 0–10. The composite score is the unweighted arithmetic mean of the five criteria, rounded to one decimal place. Scores are assigned by the founder and may be revised when material new evidence is submitted.
+      </p>
+      <p>
+        Each criterion is designed to be <strong>objective and evidence-linked</strong>: every score must have a URL pointing to the specific artifact (README section, source file, changelog entry, GitHub issue) that justifies it. No score is published without that citation.
+      </p>
+    </div>
+
+    <hr class="divider" />
+
+    <h2 style="font-size:1.15rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2rem;">
+      The five criteria
+    </h2>
+
+    <div class="criterion" id="doc-quality">
+      <h2>1. Does this server have clear, complete documentation?</h2>
+      <p>
+        Documentation Quality measures how well the server is explained to a developer who has never seen it before. A perfect score (10) means the README covers: installation, required environment variables, a complete list of exposed tools with parameter descriptions and return value schemas, and at least one usage example per tool. Scores are penalized for missing parameter types, absent return-value documentation, unclear setup instructions, or documentation that is only available in an opaque auto-generated format. We read the documentation as a developer attempting a first integration would — if a critical detail requires reading source code, that is a deduction.
+      </p>
+    </div>
+
+    <div class="criterion" id="auth-security">
+      <h2>2. How does this server handle credentials and access control?</h2>
+      <p>
+        Authentication &amp; Security evaluates the server's approach to protecting the underlying service and the host system. We assess: whether credentials are passed via environment variables or a documented secrets mechanism (good) versus hard-coded or logged (bad); whether the server documents which permissions or scopes it requires and why; whether path-traversal or injection protections are present for filesystem-adjacent operations; and whether there are any known unpatched CVEs in the server or its direct dependencies. A score of 10 requires documented least-privilege guidance, environment-variable-only credential handling, and no known open vulnerabilities.
+      </p>
+    </div>
+
+    <div class="criterion" id="tool-coverage">
+      <h2>3. Does this server expose a useful and complete set of tools?</h2>
+      <p>
+        Tool Coverage measures the breadth and practical utility of the tools the server exposes relative to what the underlying service is capable of. We start from the service's own feature set and ask: what proportion of core use cases can an LLM agent accomplish using only the tools this server provides? A server that wraps 90% of the underlying API scores higher than one that wraps 20%, all else equal. We also reward coherent tool design: tools that do one thing well, return structured output, and compose naturally with other tools. We penalize large numbers of tools with overlapping responsibilities or that require multi-step workarounds for common tasks.
+      </p>
+    </div>
+
+    <div class="criterion" id="reliability">
+      <h2>4. Does this server fail gracefully when things go wrong?</h2>
+      <p>
+        Reliability &amp; Error Handling examines what happens at the edges: rate limits, missing permissions, malformed inputs, upstream API outages. A high-scoring server returns structured, human-readable error messages that tell the calling agent what went wrong and what to do next. It handles rate limits by surfacing the retry-after value rather than crashing. It validates inputs before calling the upstream and returns a clear validation error rather than passing bad data through. We look at the server's commit history and issue tracker for evidence of reliability bug fixes, and we count recurring issue patterns as a negative signal.
+      </p>
+    </div>
+
+    <div class="criterion" id="community">
+      <h2>5. Is this server actively maintained and backed by a credible team?</h2>
+      <p>
+        Community &amp; Maintenance scores the long-term viability of the server. First-party servers maintained by the company that owns the underlying service score highest because they have structural incentive to keep the integration working. We examine: time since last commit, how quickly recent issues were responded to, whether there is a changelog, and whether the server ships as part of an officially supported product (e.g., included in Claude Desktop). Abandoned repos with open critical issues, or forks that have diverged from an upstream without explanation, score low regardless of current feature completeness.
+      </p>
+    </div>
+
+    <hr class="divider" />
+
+    <div style="max-width:72ch;">
+      <h2 id="composite" style="font-size:1.25rem;margin-bottom:0.75rem;">How the composite score is calculated</h2>
+      <p>
+        Composite = (doc_quality + auth_security + tool_coverage + reliability + community) ÷ 5, rounded to one decimal place.
+      </p>
+      <p>
+        All five criteria are equally weighted in v1.0. We may introduce differential weighting in a future version if evidence suggests that certain criteria are more predictive of real-world integration success — that change would require a methodology version bump and would not be applied retroactively to existing scores without recalculation.
+      </p>
+
+      <h2 id="re-score" style="font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">How to request a re-score</h2>
+      <p>
+        Open a pull request against this repository adding or modifying the tool's JSON file under <code>src/data/tools/</code>. The PR must include: the specific criterion being disputed, the current score, the proposed score, and a URL pointing to the evidence. We will review all such PRs within two weeks. We will not change scores based on vendor relationships, commercial pressure, or assertions without evidence.
+      </p>
+
+      <h2 id="versioning" style="font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">Methodology versioning</h2>
+      <p>
+        This page is Methodology v1.0, published 2026-05-07. It is frozen at <code>/methodology/v1.0/</code>. Any material change to scoring criteria, weights, or composite calculation will increment the version number, will be published as a new dated page, and will trigger a re-score of all affected tools. The current version always lives at <code>/methodology/</code>.
+      </p>
+    </div>
+  </div>
+</Base>

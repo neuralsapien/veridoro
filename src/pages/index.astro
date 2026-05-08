@@ -1,0 +1,121 @@
+---
+import Base from '../layouts/Base.astro';
+import { getRankedTools, scoreColor, CRITERIA } from '../data/tools';
+
+const ranked = getRankedTools();
+const top3 = ranked.slice(0, 3);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Veridoro',
+  url: 'https://veridoro.com',
+  description: 'Benchmark-driven rankings of MCP servers and AI integrations, scored by published methodology.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: 'https://veridoro.com/compare/?q={search_term_string}',
+    'query-input': 'required name=search_term_string',
+  },
+};
+---
+<Base
+  title="Veridoro — MCP Server Rankings"
+  description="Benchmark-driven rankings of MCP servers and AI integrations. Every score is produced by published methodology and reviewed by a human."
+  jsonLd={jsonLd}
+>
+  <section class="hero" aria-label="Hero">
+    <div class="hero-inner">
+      <h1>Which <em>MCP servers</em> can you actually trust?</h1>
+      <p class="tagline">
+        Veridoro benchmarks MCP servers against a published 5-criterion methodology — documentation quality, auth &amp; security, tool coverage, reliability, and community maintenance. Every score is human-reviewed.
+      </p>
+      <div class="cta-row">
+        <a href="/rankings/" class="btn btn-primary">See full rankings →</a>
+        <a href="/methodology/" class="btn btn-secondary">How we score</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-label="Top-ranked MCP servers">
+    <h2 class="section-title">Top-ranked MCP servers</h2>
+    <p class="section-subtitle">
+      As of May 2026 — <a href="/methodology/">see scoring methodology</a>
+    </p>
+
+    <div class="card-grid">
+      {top3.map((tool, i) => (
+        <article class="card">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;margin-bottom:0.75rem;">
+            <span class={`rank-badge rank-${i + 1}`}>#{i + 1}</span>
+            <span class={`score-badge ${scoreColor(tool.composite)}`}>
+              {tool.composite.toFixed(1)} / 10
+            </span>
+          </div>
+          <h3 style="font-size:1.05rem;margin-bottom:0.2rem;">
+            <a href={`/tools/${tool.slug}/`} style="color:inherit;">{tool.name}</a>
+          </h3>
+          <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.75rem;">{tool.vendor} · {tool.category}</p>
+          <p style="font-size:0.875rem;color:#374151;margin-bottom:1rem;">{tool.description}</p>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            {CRITERIA.map(c => (
+              <div class="score-bar-wrap">
+                <span style="font-size:0.75rem;color:var(--muted);min-width:120px;">{c.label.split(' ').slice(0,2).join(' ')}</span>
+                <div class="score-bar">
+                  <div
+                    class={`score-bar-fill ${scoreColor(tool.scores[c.key].value)}`}
+                    style={`width:${tool.scores[c.key].value * 10}%`}
+                  />
+                </div>
+                <span class={`score-num ${scoreColor(tool.scores[c.key].value)}`}>
+                  {tool.scores[c.key].value}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div style="margin-top:1.25rem;">
+            <a href={`/tools/${tool.slug}/`} style="font-size:0.85rem;font-weight:600;">
+              View full review →
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" aria-label="About Veridoro" style="padding-top:0;">
+    <hr class="divider" />
+    <div style="max-width:72ch;">
+      <h2 id="what-is-veridoro" style="font-size:1.5rem;margin-bottom:1rem;">What is Veridoro?</h2>
+      <p>
+        Veridoro is a narrow, benchmark-driven index of MCP servers — the integration layer that connects large language models to external tools and data sources. Rankings are produced by a <a href="/methodology/">published methodology</a> using five objective criteria, and every score is reviewed by a human before publication.
+      </p>
+      <p style="margin-top:0.75rem;">
+        The MCP ecosystem is growing fast and has no authoritative ranked index yet. Veridoro fills that gap: one place where you can compare servers by documentation quality, security model, tool breadth, reliability, and community activity — with the evidence for every score linked inline.
+      </p>
+      <p style="margin-top:0.75rem;">
+        No vendor pays to be listed. No vendor pays to rank higher. The monitor product that funds operations is priced separately and has no effect on rankings. If you think a score is wrong, <a href={ranked[0].repo} target="_blank" rel="noopener">open a PR with evidence</a>.
+      </p>
+    </div>
+
+    <hr class="divider" />
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;margin-top:2rem;">
+      <div class="card" style="border-left:3px solid var(--accent);">
+        <div style="font-size:1.75rem;font-weight:800;color:var(--accent);">{ranked.length}</div>
+        <div style="font-size:0.85rem;color:var(--muted);margin-top:0.25rem;">MCP servers scored</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--score-high);">
+        <div style="font-size:1.75rem;font-weight:800;color:var(--score-high);">5</div>
+        <div style="font-size:0.85rem;color:var(--muted);margin-top:0.25rem;">Scoring criteria</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--score-mid);">
+        <div style="font-size:1.75rem;font-weight:800;color:var(--score-mid);">100%</div>
+        <div style="font-size:0.85rem;color:var(--muted);margin-top:0.25rem;">Human-reviewed scores</div>
+      </div>
+      <div class="card" style="border-left:3px solid #7c3aed;">
+        <div style="font-size:1.75rem;font-weight:800;color:#7c3aed;">v1.0</div>
+        <div style="font-size:0.85rem;color:var(--muted);margin-top:0.25rem;">Published methodology</div>
+      </div>
+    </div>
+  </section>
+</Base>

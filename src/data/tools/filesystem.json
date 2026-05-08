@@ -1,0 +1,45 @@
+{
+  "slug": "filesystem",
+  "name": "Filesystem MCP",
+  "vendor": "Anthropic",
+  "url": "https://modelcontextprotocol.io/",
+  "repo": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem",
+  "description": "Official Anthropic MCP server for local filesystem operations. Exposes read, write, search, and directory-listing tools scoped to user-specified allowed directories.",
+  "category": "File Management",
+  "scores": {
+    "doc_quality": {
+      "value": 9,
+      "evidence_url": "https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem/README.md",
+      "scored_at": "2026-05-07",
+      "notes": "Comprehensive documentation with setup, allowed-directory configuration, security model explanation, and all tool schemas defined. One of the best-documented servers in the ecosystem."
+    },
+    "auth_security": {
+      "value": 6,
+      "evidence_url": "https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem/src/index.ts",
+      "scored_at": "2026-05-07",
+      "notes": "Security model is directory-scoping rather than authentication. Allowed directories are configured at launch. No credentials involved, but path-traversal protection is manually enforced rather than OS-level sandboxed."
+    },
+    "tool_coverage": {
+      "value": 8,
+      "evidence_url": "https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem/README.md#tools",
+      "scored_at": "2026-05-07",
+      "notes": "11 tools: read_file, read_multiple_files, write_file, edit_file, create_directory, list_directory, directory_tree, move_file, search_files, get_file_info, list_allowed_directories. Solid coverage of real-world file workflows."
+    },
+    "reliability": {
+      "value": 9,
+      "evidence_url": "https://github.com/modelcontextprotocol/servers/commits/main/src/filesystem",
+      "scored_at": "2026-05-07",
+      "notes": "Deterministic local operations with clear error messages for permission violations and missing files. No network dependency. Highly stable across Claude Desktop versions."
+    },
+    "community": {
+      "value": 9,
+      "evidence_url": "https://github.com/modelcontextprotocol/servers",
+      "scored_at": "2026-05-07",
+      "notes": "First-party Anthropic server, ships with Claude Desktop out of the box. Highest star count and issue activity in the MCP servers repository."
+    }
+  },
+  "composite": 8.2,
+  "last_reviewed_by": "founder",
+  "last_reviewed_at": "2026-05-07",
+  "needs_human_review": false
+}

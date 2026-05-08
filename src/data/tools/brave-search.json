@@ -1,0 +1,45 @@
+{
+  "slug": "brave-search",
+  "name": "Brave Search MCP",
+  "vendor": "Brave Software",
+  "url": "https://brave.com/search/api/",
+  "repo": "https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search",
+  "description": "Official MCP server for the Brave Search API. Exposes web search and local business search as callable tools, returning structured results with titles, URLs, and snippets.",
+  "category": "Search",
+  "scores": {
+    "doc_quality": {
+      "value": 8,
+      "evidence_url": "https://github.com/modelcontextprotocol/servers/blob/main/src/brave-search/README.md",
+      "scored_at": "2026-05-07",
+      "notes": "Clear README with setup steps, environment variable docs, and example outputs. Missing schema definitions for response objects."
+    },
+    "auth_security": {
+      "value": 7,
+      "evidence_url": "https://github.com/modelcontextprotocol/servers/blob/main/src/brave-search/README.md#configuration",
+      "scored_at": "2026-05-07",
+      "notes": "API key passed via environment variable — standard and safe. No credential rotation guidance or scoped-key documentation."
+    },
+    "tool_coverage": {
+      "value": 6,
+      "evidence_url": "https://github.com/modelcontextprotocol/servers/blob/main/src/brave-search/index.ts",
+      "scored_at": "2026-05-07",
+      "notes": "Two tools exposed: brave_web_search and brave_local_search. Covers core use cases but lacks image search, news search, and autocomplete."
+    },
+    "reliability": {
+      "value": 8,
+      "evidence_url": "https://github.com/modelcontextprotocol/servers/commits/main/src/brave-search",
+      "scored_at": "2026-05-07",
+      "notes": "Error messages are descriptive and include HTTP status codes. Rate-limit handling documented. Upstream Brave API SLA applies."
+    },
+    "community": {
+      "value": 8,
+      "evidence_url": "https://github.com/modelcontextprotocol/servers",
+      "scored_at": "2026-05-07",
+      "notes": "Maintained in the official MCP servers monorepo by Anthropic. Active issue tracker, regular commits, and included in Claude Desktop by default."
+    }
+  },
+  "composite": 7.4,
+  "last_reviewed_by": "founder",
+  "last_reviewed_at": "2026-05-07",
+  "needs_human_review": false
+}

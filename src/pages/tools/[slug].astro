@@ -1,0 +1,154 @@
+---
+import Base from '../../layouts/Base.astro';
+import { tools, CRITERIA, scoreColor } from '../../data/tools';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths = (() => {
+  return tools.map((tool) => ({
+    params: { slug: tool.slug },
+    props: { tool },
+  }));
+}) satisfies GetStaticPaths;
+
+const { tool } = Astro.props;
+
+const criterionQuestions: Record<string, string> = {
+  doc_quality:   'Is this server well-documented?',
+  auth_security: 'How does it handle credentials and security?',
+  tool_coverage: 'What tools does it expose, and how complete is the coverage?',
+  reliability:   'How does it handle errors and edge cases?',
+  community:     'Is this server actively maintained?',
+};
+
+const compositeColor = scoreColor(tool.composite);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: tool.name,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Cross-platform',
+    url: tool.url,
+    codeRepository: tool.repo,
+    author: { '@type': 'Organization', name: tool.vendor },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Review',
+    itemReviewed: {
+      '@type': 'SoftwareApplication',
+      name: tool.name,
+      url: tool.url,
+    },
+    author: { '@type': 'Organization', name: 'Veridoro', url: 'https://veridoro.com' },
+    publisher: { '@type': 'Organization', name: 'Veridoro' },
+    datePublished: tool.last_reviewed_at,
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: tool.composite,
+      bestRating: 10,
+      worstRating: 0,
+    },
+    reviewBody: tool.description,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AggregateRating',
+    itemReviewed: { '@type': 'SoftwareApplication', name: tool.name },
+    ratingValue: tool.composite,
+    bestRating: 10,
+    worstRating: 0,
+    reviewCount: 1,
+  },
+];
+---
+<Base
+  title={`${tool.name} Review — Veridoro Score ${tool.composite}/10`}
+  description={`Veridoro score for ${tool.name}: ${tool.composite}/10. ${tool.description}`}
+  jsonLd={jsonLd}
+>
+  <div class="page">
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.5rem;">
+      <a href="/">Home</a> · <a href="/rankings/">Rankings</a> · {tool.name}
+    </p>
+
+    <div class="tool-header">
+      <div class="tool-meta">
+        <h1>{tool.name}</h1>
+        <p class="vendor">
+          by <strong>{tool.vendor}</strong> ·
+          <a href={tool.url} target="_blank" rel="noopener noreferrer">Website ↗</a> ·
+          <a href={tool.repo} target="_blank" rel="noopener noreferrer">Source ↗</a>
+        </p>
+        <p class="description">{tool.description}</p>
+        <p style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem;">
+          Last reviewed: {tool.last_reviewed_at} by {tool.last_reviewed_by}
+        </p>
+      </div>
+
+      <div class="composite-block">
+        <div class="label">Veridoro Score</div>
+        <div class={`big-score ${compositeColor === 'score-high' ? 'score-high' : compositeColor === 'score-mid' ? 'score-mid' : 'score-low'}`}
+             style={`color: var(--${compositeColor === 'score-high' ? 'score-high' : compositeColor === 'score-mid' ? 'score-mid' : 'score-low'})`}>
+          {tool.composite.toFixed(1)}
+        </div>
+        <div class="out-of">out of 10</div>
+        <div style="margin-top:0.5rem;font-size:0.75rem;color:var(--muted);">
+          {tool.category}
+        </div>
+      </div>
+    </div>
+
+    <div class="score-breakdown">
+      <h3>Score Breakdown</h3>
+      {CRITERIA.map(c => {
+        const entry = tool.scores[c.key];
+        const cls = scoreColor(entry.value);
+        return (
+          <div class="score-row">
+            <div class="score-label">
+              <a href={`#${c.anchor}`}>{c.label}</a>
+            </div>
+            <div class="score-bar" style="flex:1;max-width:200px;">
+              <div class={`score-bar-fill ${cls}`} style={`width:${entry.value * 10}%`} />
+            </div>
+            <span class={`score-num ${cls}`}>{entry.value}/10</span>
+            <a class="evidence-link" href={entry.evidence_url} target="_blank" rel="noopener noreferrer">
+              evidence ↗
+            </a>
+          </div>
+        );
+      })}
+    </div>
+
+    {CRITERIA.map(c => {
+      const entry = tool.scores[c.key];
+      const cls = scoreColor(entry.value);
+      return (
+        <section id={c.anchor} style="margin-bottom:2.5rem;">
+          <h2 style="font-size:1.2rem;margin-bottom:0.5rem;">
+            {criterionQuestions[c.key]}
+            <span class={`score-badge ${cls}`} style="margin-left:0.75rem;font-size:0.85rem;vertical-align:middle;">
+              {entry.value}/10
+            </span>
+          </h2>
+          <p style="font-size:0.875rem;color:#374151;max-width:72ch;">{entry.notes}</p>
+          <p style="margin-top:0.5rem;">
+            <a href={entry.evidence_url} target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;">
+              View evidence →
+            </a>
+            <span style="font-size:0.78rem;color:var(--muted);margin-left:0.75rem;">
+              Scored {entry.scored_at} · <a href={`/methodology/#${c.anchor}`}>See criterion definition</a>
+            </span>
+          </p>
+        </section>
+      );
+    })}
+
+    <hr class="divider" />
+    <p style="font-size:0.85rem;color:var(--muted);">
+      Think this score is wrong? <a href={tool.repo} target="_blank" rel="noopener noreferrer">Open a PR with evidence</a> and we will review within two weeks. See <a href="/methodology/#re-score">how to request a re-score</a>.
+    </p>
+  </div>
+</Base>

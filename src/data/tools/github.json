@@ -1,0 +1,45 @@
+{
+  "slug": "github",
+  "name": "GitHub MCP Server",
+  "vendor": "GitHub (Microsoft)",
+  "url": "https://github.com/github/github-mcp-server",
+  "repo": "https://github.com/github/github-mcp-server",
+  "description": "Official GitHub MCP server maintained by GitHub. Exposes the GitHub REST and GraphQL APIs as tools — creating issues and PRs, searching repositories, reading files, managing branches, and more.",
+  "category": "Developer Tools",
+  "scores": {
+    "doc_quality": {
+      "value": 8,
+      "evidence_url": "https://github.com/github/github-mcp-server/blob/main/README.md",
+      "scored_at": "2026-05-07",
+      "notes": "Well-structured README with installation instructions, tool catalog, and configuration options. Docker and npx install paths both documented. Tool parameter descriptions could be more detailed for complex operations."
+    },
+    "auth_security": {
+      "value": 9,
+      "evidence_url": "https://github.com/github/github-mcp-server/blob/main/README.md#authentication",
+      "scored_at": "2026-05-07",
+      "notes": "Uses GitHub Personal Access Tokens with explicit scope requirements documented per tool. Token passed via environment variable. Read-only vs read-write scopes clearly separated. GitHub's own security team maintains the server."
+    },
+    "tool_coverage": {
+      "value": 9,
+      "evidence_url": "https://github.com/github/github-mcp-server/blob/main/README.md#tools",
+      "scored_at": "2026-05-07",
+      "notes": "40+ tools covering repositories, issues, pull requests, file operations, branches, commits, search, and notifications. Broad coverage rivals the GitHub CLI. Toolset is continuously expanded with new GitHub features."
+    },
+    "reliability": {
+      "value": 8,
+      "evidence_url": "https://github.com/github/github-mcp-server/commits/main",
+      "scored_at": "2026-05-07",
+      "notes": "Error handling mirrors GitHub API error semantics. Rate-limit errors surfaced cleanly. Dependent on GitHub API uptime; documentation acknowledges this. Pagination handled automatically."
+    },
+    "community": {
+      "value": 9,
+      "evidence_url": "https://github.com/github/github-mcp-server",
+      "scored_at": "2026-05-07",
+      "notes": "First-party GitHub server with thousands of GitHub stars. Active issue tracker. Funded and maintained by a 100-person company. Bug fixes typically shipped within days of report."
+    }
+  },
+  "composite": 8.6,
+  "last_reviewed_by": "founder",
+  "last_reviewed_at": "2026-05-07",
+  "needs_human_review": false
+}

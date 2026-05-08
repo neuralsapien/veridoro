@@ -1,0 +1,97 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getRankedTools, CRITERIA, scoreColor } from '../../data/tools';
+
+const ranked = getRankedTools();
+const asOf = '2026-05-07';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'MCP Server Rankings — Veridoro',
+  description: 'Ranked list of MCP servers by composite Veridoro score.',
+  url: 'https://veridoro.com/rankings/',
+  numberOfItems: ranked.length,
+  itemListElement: ranked.map((tool, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: `https://veridoro.com/tools/${tool.slug}/`,
+    name: tool.name,
+  })),
+};
+---
+<Base
+  title="MCP Server Rankings — Veridoro"
+  description={`Ranked list of ${ranked.length} MCP servers scored by Veridoro's published methodology. Updated ${asOf}.`}
+  jsonLd={jsonLd}
+>
+  <div class="page">
+    <div class="page-header">
+      <h1 id="rankings">MCP Server Rankings</h1>
+      <p class="subtitle">Sorted by composite score — all scores are human-reviewed</p>
+      <p class="meta">As of {asOf} · {ranked.length} servers scored · <a href="/methodology/">Methodology v1.0</a></p>
+    </div>
+
+    <div class="notice">
+      Rankings change only when a tool's underlying evidence changes and a reviewer signs off. Daily ranking churn would destroy credibility — so we don't do it.
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Server</th>
+            <th>Score</th>
+            {CRITERIA.map(c => <th>{c.label}</th>)}
+            <th>Reviewed</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ranked.map((tool, i) => (
+            <tr>
+              <td>
+                <span class={`rank-badge${i < 3 ? ` rank-${i + 1}` : ''}`}>
+                  #{i + 1}
+                </span>
+              </td>
+              <td>
+                <div class="tool-link">
+                  <a href={`/tools/${tool.slug}/`}>{tool.name}</a>
+                </div>
+                <div class="tool-vendor">{tool.vendor}</div>
+              </td>
+              <td>
+                <span class={`score-badge ${scoreColor(tool.composite)}`}>
+                  {tool.composite.toFixed(1)}
+                </span>
+              </td>
+              {CRITERIA.map(c => (
+                <td>
+                  <div class="score-bar-wrap">
+                    <div class="score-bar" style="min-width:60px;">
+                      <div
+                        class={`score-bar-fill ${scoreColor(tool.scores[c.key].value)}`}
+                        style={`width:${tool.scores[c.key].value * 10}%`}
+                      />
+                    </div>
+                    <span class={`score-num ${scoreColor(tool.scores[c.key].value)}`}>
+                      {tool.scores[c.key].value}
+                    </span>
+                  </div>
+                </td>
+              ))}
+              <td style="font-size:0.78rem;color:var(--muted);white-space:nowrap;">
+                {tool.last_reviewed_at}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:2rem;font-size:0.85rem;color:var(--muted);">
+      <p>All scores are produced by <a href="/methodology/">Veridoro Methodology v1.0</a>. The composite is the unweighted mean of five criteria. Scores are not for sale.</p>
+    </div>
+  </div>
+</Base>

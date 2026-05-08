@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  canonical?: string;
+  image?: string;
+}
+
+const {
+  title,
+  description,
+  jsonLd,
+  canonical,
+  image = 'https://veridoro.com/og.png',
+} = Astro.props;
+
+const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+const siteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Veridoro',
+  url: 'https://veridoro.com',
+  description: 'Data integrity for the AI era. Benchmark-driven rankings of MCP servers and AI integrations.',
+};
+const ldArray = [siteJsonLd, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [])];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="generator" content={Astro.generator} />
+
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalURL} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={image} />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+
+  <!-- Feeds & discovery -->
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <link rel="alternate" type="application/rss+xml" title="Veridoro Rankings Feed" href="/rss.xml" />
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json" set:html={JSON.stringify(ldArray)} />
+</head>
+<body>
+  <site-header>
+    <div class="header-inner">
+      <a href="/" class="logo">Verido<span>ro</span></a>
+      <nav class="nav-links" aria-label="Site navigation">
+        <a href="/rankings/">Rankings</a>
+        <a href="/compare/">Compare</a>
+        <a href="/methodology/">Methodology</a>
+      </nav>
+    </div>
+  </site-header>
+
+  <main id="main">
+    <slot />
+  </main>
+
+  <site-footer>
+    <div class="footer-inner">
+      <p>© 2026 Veridoro — Data Integrity for the AI Era</p>
+      <nav class="footer-links" aria-label="Footer links">
+        <a href="/methodology/">Methodology v1.0</a>
+        <a href="/api/tools.json">Tools API</a>
+        <a href="/api/rankings.json">Rankings API</a>
+        <a href="/rss.xml">RSS</a>
+        <a href="/llms.txt">llms.txt</a>
+      </nav>
+    </div>
+  </site-footer>
+</body>
+</html>

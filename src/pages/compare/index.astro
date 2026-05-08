@@ -1,0 +1,76 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getRankedTools, CRITERIA, scoreColor } from '../../data/tools';
+
+const ranked = getRankedTools();
+---
+<Base
+  title="Compare MCP Servers — Veridoro"
+  description="Side-by-side comparison of MCP servers across all five Veridoro scoring criteria: documentation, security, tool coverage, reliability, and community."
+>
+  <div class="page">
+    <div class="page-header">
+      <h1 id="compare">Compare MCP Servers</h1>
+      <p class="subtitle">All {ranked.length} scored servers, all five criteria, side by side</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Server</th>
+            <th>Composite</th>
+            {CRITERIA.map(c => <th><a href={`/methodology/#${c.anchor}`}>{c.label}</a></th>)}
+            <th>Category</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ranked.map(tool => (
+            <tr>
+              <td>
+                <div class="tool-link"><a href={`/tools/${tool.slug}/`}>{tool.name}</a></div>
+                <div class="tool-vendor">{tool.vendor}</div>
+              </td>
+              <td>
+                <span class={`score-badge ${scoreColor(tool.composite)}`}>
+                  {tool.composite.toFixed(1)}
+                </span>
+              </td>
+              {CRITERIA.map(c => {
+                const v = tool.scores[c.key].value;
+                const cls = scoreColor(v);
+                return (
+                  <td>
+                    <div class="score-bar-wrap">
+                      <div class="score-bar" style="min-width:50px;">
+                        <div class={`score-bar-fill ${cls}`} style={`width:${v * 10}%`} />
+                      </div>
+                      <span class={`score-num ${cls}`}>{v}</span>
+                    </div>
+                  </td>
+                );
+              })}
+              <td style="font-size:0.82rem;color:var(--muted);">{tool.category}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:1.5rem;">
+      <h2 style="font-size:1rem;margin-bottom:0.75rem;">What do these columns mean?</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;">
+        {CRITERIA.map(c => (
+          <div class="card" style="padding:1rem;">
+            <h3 style="font-size:0.85rem;margin-bottom:0.35rem;">
+              <a href={`/methodology/#${c.anchor}`}>{c.label}</a>
+            </h3>
+          </div>
+        ))}
+      </div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-top:1rem;">
+        Each criterion is 0–10. See the <a href="/methodology/">full methodology</a> for detailed definitions and scoring rubrics.
+      </p>
+    </div>
+  </div>
+</Base>
