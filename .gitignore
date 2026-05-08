@@ -2,3 +2,22 @@ llms/
 dist/
 node_modules/
 .astro/
+
+# LLM project instructions (private)
+CLAUDE.md
+
+# Secrets — absolute red line
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+.secrets/
+secrets.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
